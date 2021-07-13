@@ -20,6 +20,19 @@ class UploadController extends Controller
      * @param Request $request
      * @return array
      */
+    private function getClientIP(){
+        // Gets real user IP address
+        if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)){
+            return  $_SERVER["HTTP_X_FORWARDED_FOR"];
+        }else if (array_key_exists('REMOTE_ADDR', $_SERVER)) {
+            return $_SERVER["REMOTE_ADDR"];
+        }else if (array_key_exists('HTTP_CLIENT_IP', $_SERVER)) {
+            return $_SERVER["HTTP_CLIENT_IP"];
+        }
+
+        return '';
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -29,7 +42,7 @@ class UploadController extends Controller
 
         $upload = Upload::create([
             'country_code' => $request->country_code,
-            'ip_address' => $request->ip(),
+            'ip_address' => $this->getClientIP(),
             'archive_name' => $request->file('archive')->getClientOriginalName()
         ]);
 
@@ -63,6 +76,7 @@ class UploadController extends Controller
             }
         }
 
+        // Delete unarchived files after verification
         Storage::disk('public')->deleteDirectory($upload->id);
 
         return $validatedFiles;

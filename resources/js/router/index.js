@@ -1,6 +1,8 @@
 import VueRouter from 'vue-router'
 import Home from "../views/Home";
 import Vue from "vue";
+import Admin from "../views/Admin";
+import Login from "../views/Login";
 
 Vue.use(VueRouter)
 
@@ -10,11 +12,18 @@ const routes = [
         name: 'Home',
         component: Home
     },
+    {
+        path: '/admin',
+        name: 'Login',
+        component: Login
+    },
+    {
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: Admin
+    },
 ]
 
-// 3. Create the router instance and pass the `routes` option
-// You can pass in additional options here, but let's
-// keep it simple for now.
 const router = new VueRouter({
     mode: 'history',
     base: process.env.BASE_URL,

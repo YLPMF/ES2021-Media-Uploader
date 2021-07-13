@@ -14,7 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::post('/upload',[\App\Http\Controllers\UploadController::class, 'store']);
+Route::post('/login',[\App\Http\Controllers\AuthController::class, 'login']);
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:api')->group(function () {
+    Route::get('/me',[\App\Http\Controllers\AuthController::class, 'me']);
+
+    Route::get('/admin/uploads', [\App\Http\Controllers\AdminController::class, 'index']);
+    Route::get('/admin/files/{id}', [\App\Http\Controllers\AdminController::class, 'show']);
+    Route::put('/admin/files/{id}', [\App\Http\Controllers\AdminController::class, 'update']);
 });
