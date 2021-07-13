@@ -18,7 +18,7 @@ class UploadController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return Response
+     * @return array
      */
     public function store(Request $request)
     {
@@ -35,6 +35,7 @@ class UploadController extends Controller
 
         $zip = new ZipArchive();
         $file = $request->file('archive');
+        Storage::disk('public')->putFileAs('', $file, $upload->id.'.zip');
         $zip->open($file->path());
 
         $zip->extractTo(storage_path('app/public/'.$upload->id));
@@ -62,6 +63,7 @@ class UploadController extends Controller
             }
         }
 
+        Storage::disk('public')->deleteDirectory($upload->id);
 
         return $validatedFiles;
     }
