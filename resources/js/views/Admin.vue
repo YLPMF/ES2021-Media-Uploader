@@ -20,6 +20,22 @@
                     <b-button @click="toggleFileStatus(data.item.upload_id, data.item.id, !data.item.status)">{{ !data.item.status ? 'Verify' : 'Deny' }}</b-button>
                 </template>
             </b-table>
+
+            <template #modal-footer="{ ok, cancel }">
+
+                <b-button size="sm" variant="outline-secondary" @click="download()">
+                    Download
+                </b-button>
+
+                <b-button size="sm" variant="success" @click="ok()">
+                    OK
+                </b-button>
+
+                <b-button size="sm" variant="danger" @click="cancel()">
+                    Cancel
+                </b-button>
+
+            </template>
         </b-modal>
 
     </b-container>
@@ -72,6 +88,7 @@ export default {
             ],
             uploads: [],
             files: [],
+            upload_id: null,
         }
     },
     mounted() {
@@ -94,6 +111,7 @@ export default {
             })
         },
         getFiles(upload_id) {
+            this.upload_id = upload_id;
             axios.get('/api/admin/files/'+upload_id).then(response => {
                 this.files = response.data;
             })
@@ -105,6 +123,12 @@ export default {
                 this.getFiles(upload_id);
             })
         },
+        download() {
+            axios.get('/api/admin/download/'+(this.upload_id)).then(response => {
+                window.location.href = response.data;
+            });
+
+        }
     }
 }
 </script>

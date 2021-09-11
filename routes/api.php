@@ -20,6 +20,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/me',[\App\Http\Controllers\AuthController::class, 'me']);
 
     Route::get('/admin/uploads', [\App\Http\Controllers\AdminController::class, 'index']);
+    Route::get('/admin/download/{id}', [\App\Http\Controllers\UploadController::class, 'download']);
     Route::get('/admin/files/{id}', [\App\Http\Controllers\AdminController::class, 'show']);
     Route::put('/admin/files/{id}', [\App\Http\Controllers\AdminController::class, 'update']);
 });

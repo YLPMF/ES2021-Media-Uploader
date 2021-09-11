@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\File;
 use App\Models\Upload;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -80,6 +81,38 @@ class UploadController extends Controller
         Storage::disk('public')->deleteDirectory($upload->id);
 
         return $validatedFiles;
+    }
+
+    public function download($id) {
+        $upload = Upload::findOrFail($id);
+
+        Storage::disk('public')->delete('download-'.$upload->id.'.zip');
+
+        $zip = new ZipArchive();
+
+        $upload_path = Storage::disk('public')->path($upload->id . '.zip');
+
+        $zip->open($upload_path);
+
+        $zip->extractTo(storage_path('app/public/'.$upload->id));
+
+        $files = File::where('upload_id', $upload->id)->where('status', 1)->get();
+
+        $download = new ZipArchive;
+        if ($download->open(storage_path().'/app/public/download-'.$upload->id.'.zip', ZipArchive::CREATE) === TRUE)
+        {
+
+            foreach($files as $file) {
+                $download->addFile(Storage::disk('public')->path($file->file_name), $file->file_name);
+            }
+
+            // All files are added, so close the zip file.
+            $download->close();
+        }
+
+        Storage::disk('public')->deleteDirectory($upload->id);
+
+        return response()->json('/storage/download-'.$upload->id.'.zip', 200);
     }
 
 }
